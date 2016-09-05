@@ -1,0 +1,36 @@
+    <h2>あなたにピッタリのアニメをさがします</h2>
+    <div id="button-area">
+        <h3>{{ questions[questionNum] }}</h3>
+        <p><button id=answer0>{{ answers[questionNum][0] }}</button><button id=answer1>{{ answers[questionNum][1] }}</button></p>
+    </div>  <!-- end button-area -->
+
+    <script type="text/javascript">
+        /*=====================================
+            ボタンが押されたら次の質問へ
+        =====================================*/
+        $('#answer0').click(function(){
+            nextquestion(0);
+        });
+        $('#answer1').click(function(){
+            nextquestion(1);
+        });
+      /*=====================================
+            ポスト
+      =====================================*/
+        function nextquestion(x){
+            //FormDataオブジェクトを用意する
+            var fd = new FormData();
+            fd.append("{{ questionNum }}",x);
+            ///nextquestionにポスト
+            $.ajax({
+                url:'/nextquestion',
+                type:'POST',
+                data:fd,
+                processData:false,
+                contentType:false,
+                success:function(data){
+                    $('#main').html(data);
+                }
+            });
+        }
+    </script>

@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title>anisommelier</title>
+    <link href="/static/glike.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/static/js/jquery-1.12.0.min.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <div id="header">
+        <div id="title">
+            <h1>
+              <a href="/index" class="selected">
+                    アニメソムリエ
+              </a>
+            </h1>
+        </div> <!-- end title -->
+        <div id="menu">
+            <ul>
+                <li><a href="/index">TOP</a></li>
+                <li><a href="/howto">使い方</a></li>
+        </ul>
+        </div><!-- end menu -->
+      </div> <!--- end header -->
+      <div id="main">
+            <h2>あなたにピッタリのアニメをさがします</h2>
+            <p><button id=start>始める</button></p>
+
+            <script type="text/javascript">
+                /*=====================================
+                    ボタンが押されたら次の質問へ
+                =====================================*/
+                $('#start').click(function(){
+                    startquestion();
+                });
+                /*=====================================
+                    ゲット
+                =====================================*/
+                function startquestion(){
+                    $.ajax({
+                        url:'/nextquestion',
+                        type:'GET',
+                        processData:false,
+                        contentType:false,
+                        success:function(data){
+                            $('#main').html(data);
+                        }
+                    });
+                }
+            </script>
+
+      </div> <!--- end main -->
+      <div id="footer">
+        <div id="copyright">
+            Copyright © 2016 nanashi<br/>
+        </div> <!-- end copyright -->
+      </div> <!-- end footer -->
+    </div> <!-- end container -->
+  </body>
+</html>
