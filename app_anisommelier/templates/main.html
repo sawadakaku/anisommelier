@@ -1,0 +1,55 @@
+<form name="test">
+    <input type="file" id="selfile"><br>
+</form>
+
+<script type="text/javascript" src="digraphtree.js"></script>
+
+<script>
+    var obj1 = document.getElementById("selfile");
+//ダイアログでファイルが選択された時
+obj1.addEventListener("change",function(evt){
+    var file = evt.target.files;
+    //FileReaderの作成
+    var reader = new FileReader();
+    //テキスト形式で読み込む
+    reader.readAsText(file[0]);
+
+    //読込終了後の処理
+    reader.onload = function(ev){
+        var array = new readDotFile(reader.result);
+        var node = array[0];
+        var edge = array[1];
+
+        nodeSearch(node, edge, 0);
+
+    }
+}, false);
+
+var nodeSearch = function (node, edge, nodeNum) { //ノード探索関数
+    if (node[nodeNum].feature) { //node.featureに値が入っている場合は途中ノード
+        var question = node[nodeNum].feature;
+        if (window.confirm(question)) { //questionにハイと答えた場合
+            label: for (var i = 0; i < edge.length; i++) {
+                if (edge[i].now == nodeNum) {
+                    nodeNum = edge[i].destination; //nodeNumをedge.destinationnに更新
+                    break label;
+                }
+            }
+            nodeSearch(node, edge, nodeNum); //再帰呼び出し
+        }
+        else {　//questionにいいえと答えた場合
+            label: for (var i = edge.length - 1; i >= 0; i--) {
+                if (edge[i].now == nodeNum) {
+                    nodeNum = edge[i].destination; //nodeNumをedge.destinationnに更新
+                    break label;
+                }
+            }
+            nodeSearch(node, edge, nodeNum); //再帰呼び出し
+        }
+    }
+    else { //node.featureにfalseが入っている場合はゴールノードなのでnode.class_nameを出力
+        alert(node[nodeNum].class_name);
+        return 0;
+    }
+}
+</script>
