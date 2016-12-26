@@ -1,20 +1,50 @@
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <form name="test">
     <input type="file" id="selfile"><br>
 </form>
+<div id="main">
+    <h2>ã‚ãªãŸã«ãƒ”ãƒƒã‚¿ãƒªã®ã‚¢ãƒ‹ãƒ¡ã‚’ã•ãŒã—ã¾ã™</h2>
+    <p><button id=start>å§‹ã‚ã‚‹</button></p>
+
+    <script type="text/javascript">
+        /*=====================================
+            ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã‚‰æ¬¡ã®è³ªå•ã¸
+        =====================================*/
+        $('#start').click(function(){
+            startquestion();
+        });
+        /*=====================================
+            ã‚²ãƒƒãƒˆ
+        =====================================*/
+        function startquestion(){
+            $.ajax({
+                url:'/getdot',
+                type:'GET',
+                dataType:'json',
+                success:function(data){
+                    var node = data[0];
+                    var edge = data[1];
+                    nodeSearch(node, edge, 0);
+                }
+            });
+        }
+    </script>
+
+</div> <!--- end main -->
 
 <script type="text/javascript" src="digraphtree.js"></script>
 
 <script>
     var obj1 = document.getElementById("selfile");
-//ƒ_ƒCƒAƒƒO‚Åƒtƒ@ƒCƒ‹‚ª‘I‘ğ‚³‚ê‚½
+//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§ãƒ•ã‚¡ã‚¤ãƒ«ãŒé¸æŠã•ã‚ŒãŸæ™‚
 obj1.addEventListener("change",function(evt){
     var file = evt.target.files;
-    //FileReader‚Ìì¬
+    //FileReaderã®ä½œæˆ
     var reader = new FileReader();
-    //ƒeƒLƒXƒgŒ`®‚Å“Ç‚İ‚Ş
+    //ãƒ†ã‚­ã‚¹ãƒˆå½¢å¼ã§èª­ã¿è¾¼ã‚€
     reader.readAsText(file[0]);
 
-    //“ÇI—¹Œã‚Ìˆ—
+    //èª­è¾¼çµ‚äº†å¾Œã®å‡¦ç†
     reader.onload = function(ev){
         var array = new readDotFile(reader.result);
         var node = array[0];
@@ -25,29 +55,32 @@ obj1.addEventListener("change",function(evt){
     }
 }, false);
 
-var nodeSearch = function (node, edge, nodeNum) { //ƒm[ƒh’TõŠÖ”
-    if (node[nodeNum].feature) { //node.feature‚É’l‚ª“ü‚Á‚Ä‚¢‚éê‡‚Í“r’†ƒm[ƒh
+var nodeSearch = function (node, edge, nodeNum) { //ãƒãƒ¼ãƒ‰æ¢ç´¢é–¢æ•°
+    //var array = [node, edge];
+    //var strjson = JSON.stringify(array);
+    //$('#jsonstr').text(strjson);
+    if (node[nodeNum].feature) { //node.featureã«å€¤ãŒå…¥ã£ã¦ã„ã‚‹å ´åˆã¯é€”ä¸­ãƒãƒ¼ãƒ‰
         var question = node[nodeNum].feature;
-        if (window.confirm(question)) { //question‚ÉƒnƒC‚Æ“š‚¦‚½ê‡
+        if (window.confirm(question)) { //questionã«ãƒã‚¤ã¨ç­”ãˆãŸå ´åˆ
             label: for (var i = 0; i < edge.length; i++) {
                 if (edge[i].now == nodeNum) {
-                    nodeNum = edge[i].destination; //nodeNum‚ğedge.destinationn‚ÉXV
+                    nodeNum = edge[i].destination; //nodeNumã‚’edge.destinationnã«æ›´æ–°
                     break label;
                 }
             }
-            nodeSearch(node, edge, nodeNum); //Ä‹AŒÄ‚Ño‚µ
+            nodeSearch(node, edge, nodeNum); //å†å¸°å‘¼ã³å‡ºã—
         }
-        else {@//question‚É‚¢‚¢‚¦‚Æ“š‚¦‚½ê‡
+        else {ã€€//questionã«ã„ã„ãˆã¨ç­”ãˆãŸå ´åˆ
             label: for (var i = edge.length - 1; i >= 0; i--) {
                 if (edge[i].now == nodeNum) {
-                    nodeNum = edge[i].destination; //nodeNum‚ğedge.destinationn‚ÉXV
+                    nodeNum = edge[i].destination; //nodeNumã‚’edge.destinationnã«æ›´æ–°
                     break label;
                 }
             }
-            nodeSearch(node, edge, nodeNum); //Ä‹AŒÄ‚Ño‚µ
+            nodeSearch(node, edge, nodeNum); //å†å¸°å‘¼ã³å‡ºã—
         }
     }
-    else { //node.feature‚Éfalse‚ª“ü‚Á‚Ä‚¢‚éê‡‚ÍƒS[ƒ‹ƒm[ƒh‚È‚Ì‚Ånode.class_name‚ğo—Í
+    else { //node.featureã«falseãŒå…¥ã£ã¦ã„ã‚‹å ´åˆã¯ã‚´ãƒ¼ãƒ«ãƒãƒ¼ãƒ‰ãªã®ã§node.class_nameã‚’å‡ºåŠ›
         alert(node[nodeNum].class_name);
         return 0;
     }
