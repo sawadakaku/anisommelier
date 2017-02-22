@@ -18,16 +18,17 @@ readDotFile = function(arg){
     var lines = allText.split('\n'); //一行ごとに配列に格納
 
     for (var i = 0; i < lines.length; i++) { //各ノード，エッジをそれぞれnode, edgeに格納
-        if (isNaN(lines[i][0])) {
+        var a = lines[i].split(" ");
+        if (isNaN(a[0])) {
             //各行の先頭が数字ではない場合何もしない
         }
         else{
-            if (nodeList.indexOf(lines[i][0]) >= 0) {
+            if (nodeList.indexOf(a[0]) >= 0) {
                 edge.push(lines[i]);
             }
             else {
                 node.push(lines[i]);
-                nodeList.push(lines[i][0]);
+                nodeList.push(a[0]);
             }
         }
     }

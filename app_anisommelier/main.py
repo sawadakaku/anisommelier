@@ -51,10 +51,7 @@ class MainPage(SessionEnabledHandler):
 
 class DotJsonHandler(SessionEnabledHandler):
     def get(self):
-         json_file = os.path.join(
-            os.path.dirname(__file__),
-            'templates',
-            'dot.json')
+        json_file = os.path.join(os.path.dirname(__file__), 'templates', 'dot.json')
         f = open(json_file,'r')
         json_data = f.read()
         f.close
@@ -108,7 +105,6 @@ class QuestionHandler(SessionEnabledHandler):
             questionNum = int(question)+1           # 次の質問の番号，とりあえず前回の質問番号＋１にする
             ques = {'questions':questions, 'answers':answers, 'questionNum':questionNum}
             functions.dorender(self, '/question.html', ques)
-
 
 config = {}
 config['webapp2_extras.sessions'] = {

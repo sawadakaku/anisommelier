@@ -1,7 +1,7 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<form name="test">
+<!--<form name="test">
     <input type="file" id="selfile"><br>
-</form>
+</form>-->
 <div id="main">
     <h2>あなたにピッタリのアニメをさがします</h2>
     <p><button id=start>始める</button></p>
@@ -30,35 +30,32 @@
         }
     </script>
 
-</div> <!--- end main -->
+</div> - end main 
 
 <script type="text/javascript" src="digraphtree.js"></script>
 
 <script>
-    var obj1 = document.getElementById("selfile");
-//ダイアログでファイルが選択された時
-obj1.addEventListener("change",function(evt){
-    var file = evt.target.files;
-    //FileReaderの作成
-    var reader = new FileReader();
-    //テキスト形式で読み込む
-    reader.readAsText(file[0]);
-
-    //読込終了後の処理
-    reader.onload = function(ev){
-        var array = new readDotFile(reader.result);
-        var node = array[0];
-        var edge = array[1];
-
-        nodeSearch(node, edge, 0);
-
-    }
-}, false);
-
+//     var obj1 = document.getElementById("selfile");
+// //ダイアログでファイルが選択された時
+// obj1.addEventListener("change",function(evt){
+//     var file = evt.target.files;
+//     //FileReaderの作成
+//     var reader = new FileReader();
+//     //テキスト形式で読み込む
+//     reader.readAsText(file[0]);
+//     //読込終了後の処理
+//     reader.onload = function(ev){
+//         //alert("hoge\n");
+//         var array = new readDotFile(reader.result);
+//         var node = array[0];
+//         var edge = array[1];
+//         nodeSearch(node, edge, 0);
+//     }
+// }, false);
 var nodeSearch = function (node, edge, nodeNum) { //ノード探索関数
-    //var array = [node, edge];
-    //var strjson = JSON.stringify(array);
-    //$('#jsonstr').text(strjson);
+    // var array = [node, edge];
+    // var strjson = JSON.stringify(array);
+    // $('#jsonstr').text(strjson);
     if (node[nodeNum].feature) { //node.featureに値が入っている場合は途中ノード
         var question = node[nodeNum].feature;
         if (window.confirm(question)) { //questionにハイと答えた場合
