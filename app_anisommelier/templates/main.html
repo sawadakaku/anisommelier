@@ -1,85 +1,152 @@
+	
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<!--<form name="test">
-    <input type="file" id="selfile"><br>
-</form>-->
+<script type="text/javascript" src="../static/jquery.socialbutton-1.9.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../static/layout.css" media="all">
+<title>教えて！アニソムリエさん</title>
+</head>
+
+<body>
+<dev id="header">
+    <h1>教えて！アニソムリエさん</h1>
+</dev>
+
 <div id="main">
-    <h2>あなたにピッタリのアニメをさがします</h2>
-    <p><button id=start>始める</button></p>
+    <div id="contents">
+        <h2>あなたにピッタリのアニメを<br>
+            さがします</h2>
+        <p><button id=start>始める</button></p>
+        <script type="text/javascript">
+            /*=====================================
+                ボタンが押されたら次の質問へ
+            =====================================*/
+            $('#start').click(function(){
+                startquestion();
+            });
+            /*=====================================
+                ゲット
+            =====================================*/
+            function startquestion(){
+                document.getElementById('mainimg').innerHTML='<img src="../images/anisom.png">'; //main画像を変更
+                  $.ajax({
+                    url:'/getdot',
+                    type:'GET',
+                    dataType:'json',
+                    success:function(data){
+                        var node = data[0];
+                        var edge = data[1];
+                        nodeSearch(node, edge, 0);
+                    }
+                });
+            }
+        </script>
+        <p id="question"></p>
+        <p id="choice">
+            <button id="yes">はい</button>
+            <button id="no">いいえ</button>
+         </p>
+
+         <div id="fukidashi">
+             <img src="../images/fukidashi2.png">
+         </div>
+
+        <div id="subimg"></div>
+        
+        <div class="tweet"></div>
+
+    </div>
+
+    <div id="mainimg">
+        <img src="../images/anisom.png">
+    </div>
 
     <script type="text/javascript">
-        /*=====================================
-            ボタンが押されたら次の質問へ
-        =====================================*/
-        $('#start').click(function(){
-            startquestion();
-        });
-        /*=====================================
-            ゲット
-        =====================================*/
-        function startquestion(){
-            $.ajax({
-                url:'/getdot',
-                type:'GET',
-                dataType:'json',
-                success:function(data){
-                    var node = data[0];
-                    var edge = data[1];
-                    nodeSearch(node, edge, 0);
-                }
-            });
+        function random(array, num) {
+            var a = array;
+            var t = [];
+            var r = [];
+            var l = a.length;
+            var n = num < l ? num : l;
+            while (n-- > 0) {
+                var i = Math.random() * l | 0;
+                r[n] = t[i] || a[i];
+                --l;
+                t[i] = t[l] || a[l];
+            }
+            return r;
         }
     </script>
+    
+    <script type="text/javascript">
+    var contrlnum = 0; //クリックイベント制御用の変数
+    var rand = 0;
 
-</div> - end main 
+        var nodeSearch = function (node, edge, nodeNum) { //ノード探索関数
+            rand = (rand + Math.floor(Math.random()*10) + 1) % 24; //乱数生成,画像変更
+            document.getElementById("subimg").innerHTML='<img src="../images/png/%d.png">'.replace("%d", rand);
+            //alert(contrlnum);
+            
+            if (node[nodeNum].feature) { //node.featureに値が入っている場合は途中ノード
+                var question = node[nodeNum].feature;
+                $("#question").text(question); //質問を表示
 
-<script type="text/javascript" src="digraphtree.js"></script>
-
-<script>
-//     var obj1 = document.getElementById("selfile");
-// //ダイアログでファイルが選択された時
-// obj1.addEventListener("change",function(evt){
-//     var file = evt.target.files;
-//     //FileReaderの作成
-//     var reader = new FileReader();
-//     //テキスト形式で読み込む
-//     reader.readAsText(file[0]);
-//     //読込終了後の処理
-//     reader.onload = function(ev){
-//         //alert("hoge\n");
-//         var array = new readDotFile(reader.result);
-//         var node = array[0];
-//         var edge = array[1];
-//         nodeSearch(node, edge, 0);
-//     }
-// }, false);
-var nodeSearch = function (node, edge, nodeNum) { //ノード探索関数
-    // var array = [node, edge];
-    // var strjson = JSON.stringify(array);
-    // $('#jsonstr').text(strjson);
-    if (node[nodeNum].feature) { //node.featureに値が入っている場合は途中ノード
-        var question = node[nodeNum].feature;
-        if (window.confirm(question)) { //questionにハイと答えた場合
-            label: for (var i = 0; i < edge.length; i++) {
-                if (edge[i].now == nodeNum) {
-                    nodeNum = edge[i].destination; //nodeNumをedge.destinationnに更新
-                    break label;
-                }
+                //questionにハイと答えた場合
+                $('#no').one('click.%d'.replace('%d', contrlnum), function(){ 
+                    //alert("hoge\n");                   
+                    label: for (var i = 0; i < edge.length; i++) {
+                        if (edge[i].now == nodeNum) {
+                            nodeNum = edge[i].destination; //nodeNumをedge.destinationnに更新
+                            break label;
+                        }
+                    }
+                    $('#yes').off('click'.replace('%d', contrlnum)); //noは殺す
+                    contrlnum = contrlnum + 1;
+                    nodeSearch(node, edge, nodeNum); //再帰呼び出し
+                });
+                //questionにいいえと答えた場合
+                $('#yes').one('click'.replace('%d', contrlnum), function() {　
+                    label: for (var i = edge.length - 1; i >= 0; i--) {
+                        if (edge[i].now == nodeNum) {
+                            nodeNum = edge[i].destination; //nodeNumをedge.destinationに更新
+                            break label;
+                        }
+                    }
+                    $('#no').off('click'.replace('%d', contrlnum)); //yesは殺す
+                    contrlnum = contrlnum + 1;
+                    nodeSearch(node, edge, nodeNum);//再帰呼び出し
+                });
             }
-            nodeSearch(node, edge, nodeNum); //再帰呼び出し
-        }
-        else {　//questionにいいえと答えた場合
-            label: for (var i = edge.length - 1; i >= 0; i--) {
-                if (edge[i].now == nodeNum) {
-                    nodeNum = edge[i].destination; //nodeNumをedge.destinationnに更新
-                    break label;
-                }
+            else { //node.featureにfalseが入っている場合はゴールノードなのでnode.class_nameを出力
+                var result = node[nodeNum].class_name;
+                //alert(result);
+                //$('#question').text(result);
+                document.getElementById('mainimg').innerHTML='<img src="../images/anisom_2.png">'; //画像を変更
+                $(function(){
+                    $.getJSON("../static/output.json", function(hogehoge) {
+                        var titleall = String(eval("hogehoge.name_" + result + ";"));
+                        var titlearray = titleall.split(",");
+                        var final = random(titlearray, 2);
+                        //alert(final);
+                        $('#question').html(final[0] + ", \n" + final[1]);
+                        $(function(){
+                            $('.tweet').socialbutton('twitter', {
+                            button: 'horizontal',
+                            text: 'あなたにおすすめのアニメは，\n%aです！！\n#アニソムリエさん'.replace('%a', final[0] + ", " + final[1])
+                            });
+                        });
+                    });
+                });
             }
-            nodeSearch(node, edge, nodeNum); //再帰呼び出し
+            return 0;
         }
-    }
-    else { //node.featureにfalseが入っている場合はゴールノードなのでnode.class_nameを出力
-        alert(node[nodeNum].class_name);
-        return 0;
-    }
-}
-</script>
+    </script>
+</div>
+
+<div id="footer">
+    <p>LINEすたんぷあります→<input type="button" value="CLICK!" onClick="window.open('http://line.me/S/sticker/1397292')"></p>
+</div>
+
+</body>
+</html>
