@@ -46,7 +46,18 @@ class SessionEnabledHandler(webapp2.RequestHandler):
 # 最初のページ(無視して良い)
 class MainPage(SessionEnabledHandler):
     def get(self):
-        functions.dorender(self, '/index.html')
+        functions.dorender(self, '/main.html')
+
+
+class DotJsonHandler(SessionEnabledHandler):
+    def get(self):
+        json_file = os.path.join(os.path.dirname(__file__), 'templates', 'dot.json')
+        f = open(json_file,'r')
+        json_data = f.read()
+        f.close
+        self.response.headers['Content-type'] = 'application/json'
+        self.response.out.write(json_data)
+
 
 """
 前回までの質問から今回の質問を生成する部分(ここの実装をおねがいします)
@@ -95,13 +106,13 @@ class QuestionHandler(SessionEnabledHandler):
             ques = {'questions':questions, 'answers':answers, 'questionNum':questionNum}
             functions.dorender(self, '/question.html', ques)
 
-
 config = {}
 config['webapp2_extras.sessions'] = {
         'secret_key' : 'my-secret-key'
         }
 logging.getLogger().setLevel(logging.DEBUG)
-app = webapp2.WSGIApplication([('/nextquestion', QuestionHandler),
+app = webapp2.WSGIApplication([('/getdot', DotJsonHandler),
+                               ('/nextquestion', QuestionHandler),
                                ('/.*', MainPage),],
                                config=config,
                                debug=True)
