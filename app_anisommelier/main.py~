@@ -62,7 +62,6 @@ class DotJsonHandler(SessionEnabledHandler):
 """
 前回までの質問から今回の質問を生成する部分(ここの実装をおねがいします)
 """
-'''
 class QuestionHandler(SessionEnabledHandler):
     # 最初の質問を決定する
     def get(self):
@@ -106,7 +105,6 @@ class QuestionHandler(SessionEnabledHandler):
             questionNum = int(question)+1           # 次の質問の番号，とりあえず前回の質問番号＋１にする
             ques = {'questions':questions, 'answers':answers, 'questionNum':questionNum}
             functions.dorender(self, '/question.html', ques)
-'''
 
 config = {}
 config['webapp2_extras.sessions'] = {
@@ -114,7 +112,7 @@ config['webapp2_extras.sessions'] = {
         }
 logging.getLogger().setLevel(logging.DEBUG)
 app = webapp2.WSGIApplication([('/getdot', DotJsonHandler),
-                               # ('/nextquestion', QuestionHandler),
+                               ('/nextquestion', QuestionHandler),
                                ('/.*', MainPage),],
                                config=config,
                                debug=True)
